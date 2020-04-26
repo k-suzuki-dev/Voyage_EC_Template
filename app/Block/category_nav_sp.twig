@@ -1,0 +1,86 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% set Categories = repository('Eccube\\Entity\\Category').getList() %}
+
+{% macro tree(Category) %}
+    {% from _self import tree %}
+    <a href="{{ url('product_list') }}?category_id={{ Category.id }}">
+        {{ Category.name }}
+    </a>
+    {% if Category.children|length > 0 %}
+        <ul>
+            {% for ChildCategory in Category.children %}
+                <li>
+                    {{ tree(ChildCategory) }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
+{% block javascript %}
+<script>
+$(function() {
+  var isSlideUp = true;
+  $('.ec-headerCategoryArea__heading').on('click', function() {
+    $(this).toggleClass('active');
+    if (isSlideUp = !isSlideUp) {
+      $(this).next('.ec-itemNav').slideUp();
+    } else {
+      $(this).next('.ec-itemNav').slideDown();
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{# @see https://github.com/bolt/bolt/pull/2388 #}
+{% from _self import tree %}
+
+<div class="ec-headerCategoryArea">
+    <div class="ec-headerCategoryArea__heading">
+        <p>カテゴリから探す</p>
+    </div>
+    <div class="ec-itemNav" style="display: none">
+        <ul class="ec-itemNav__nav">
+            {% for Category in Categories %}
+                <li>
+                    {{ tree(Category) }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="ec-itemPageLinkNav">
+      <ul>
+        <li>
+          <a href="{{ url('homepage') }}">ホーム</a>
+        </li>
+        <li>
+          <a href="{{ url('product_list') }}">商品一覧</a>
+        </li>
+        <li>
+          <a href="{{ url('help_about') }}">当サイトについて</a>
+        </li>
+        <li>
+          <a href="{{ url('help_guide') }}">ご利用ガイド</a>
+        </li>
+        <li>
+          <a href="{{ url('help_privacy') }}">プライバシーポリシー</a>
+        </li>
+        <li>
+          <a href="{{ url('help_tradelaw') }}">特定商取引法に基づく表記</a>
+        </li>
+        <li>
+          <a href="{{ url('contact') }}">お問い合わせ</a>
+        </li>
+      </ul>
+    </div>
+</div>
